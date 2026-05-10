@@ -1,1 +1,11 @@
 firebase-key.json
+.venv/
+.venv-1/
+**/__pycache__/
+**/*.pyc
+**/.env
+!**/.env.example
+**/node_modules/
+**/.expo/
+**/dist/
+**/build/
