@@ -1,0 +1,262 @@
+// schema.prisma — Full database schema for Smart Bag-Pack
+// Source: Database.md — all 12 tables exactly as specified
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── User ────────────────────────────────────────────────────────────────────
+model User {
+  id                   String    @id @default(uuid())
+  fullName             String    @map("full_name") @db.VarChar(100)
+  email                String    @unique @db.VarChar(255)
+  passwordHash         String    @map("password_hash") @db.VarChar(255)
+  // FK to devices.id — unique enforces one-to-one
+  deviceId             String?   @unique @map("device_id")
+  failedLoginAttempts  Int       @default(0) @map("failed_login_attempts")
+  lockedUntil          DateTime? @map("locked_until") @db.Timestamptz()
+  lastLoginAt          DateTime? @map("last_login_at") @db.Timestamptz()
+  quietHoursEnabled    Boolean   @default(false) @map("quiet_hours_enabled")
+  quietHoursStart      String?   @map("quiet_hours_start") @db.VarChar(5)
+  quietHoursEnd        String?   @map("quiet_hours_end") @db.VarChar(5)
+  deletedAt            DateTime? @map("deleted_at") @db.Timestamptz()
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // owning side: User holds device_id FK
+  device            Device?   @relation("DeviceOwner", fields: [deviceId], references: [id], onDelete: SetNull)
+  sessions          UserSession[]
+  deviceTokens      UserDeviceToken[]
+  notifications     Notification[]
+  notificationPrefs NotificationPreference[]
+  activityLogs      ActivityLog[]
+  geofenceConfigs   GeofenceConfig[]
+
+  @@index([email])
+  @@map("users")
+}
+
+// ─── User Session (refresh tokens) ────────────────────────────────────────────
+model UserSession {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  refreshToken String    @unique @map("refresh_token") @db.VarChar(512)
+  deviceInfo   String?   @map("device_info") @db.VarChar(255)
+  ipAddress    String?   @map("ip_address") @db.VarChar(45)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz()
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz()
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshToken])
+  @@index([expiresAt])
+  @@map("user_sessions")
+}
+
+// ─── FCM Push Tokens ──────────────────────────────────────────────────────────
+model UserDeviceToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  fcmToken  String   @map("fcm_token") @db.VarChar(512)
+  platform  String   @db.VarChar(10)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, fcmToken])
+  @@index([userId])
+  @@map("user_device_tokens")
+}
+
+// ─── Device ───────────────────────────────────────────────────────────────────
+model Device {
+  id               String    @id @default(uuid())
+  deviceCode       String    @unique @map("device_code") @db.VarChar(20)
+  // ownerUserId kept for quick lookups — the authoritative FK is users.device_id
+  ownerUserId      String?   @map("owner_user_id")
+  deviceName       String    @default("My Smart Bag-Pack") @map("device_name") @db.VarChar(100)
+  isOnline         Boolean   @default(false) @map("is_online")
+  lastHeartbeatAt  DateTime? @map("last_heartbeat_at") @db.Timestamptz()
+  firmwareVersion  String?   @map("firmware_version") @db.VarChar(20)
+  geofenceState    String    @default("INSIDE") @map("geofence_state") @db.VarChar(10)
+  lockState        String    @default("LOCKED") @map("lock_state") @db.VarChar(10)
+  lastKnownLat     Float?    @map("last_known_lat")
+  lastKnownLng     Float?    @map("last_known_lng")
+  lastLocationAt   DateTime? @map("last_location_at") @db.Timestamptz()
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  // back-reference only — no fields/references here (FK is on User)
+  owner          User?   @relation("DeviceOwner")
+  rfidTags       RfidTag[]
+  tagReadings    TagReading[]
+  gpsLocations   GpsLocation[]
+  lockEvents     LockEvent[]
+  geofenceConfig GeofenceConfig?
+
+  @@index([deviceCode])
+  @@index([ownerUserId])
+  @@map("devices")
+}
+
+// ─── RFID Tag Aliases ─────────────────────────────────────────────────────────
+model RfidTag {
+  id        String    @id @default(uuid())
+  deviceId  String    @map("device_id")
+  epc       String    @db.VarChar(64)
+  alias     String?   @db.VarChar(50)
+  icon      String    @default("bag-personal") @db.VarChar(30)
+  isActive  Boolean   @default(true) @map("is_active")
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  device    Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([deviceId, epc])
+  @@index([deviceId])
+  @@index([epc])
+  @@map("rfid_tags")
+}
+
+// ─── Tag Readings (live/recent RFID scan events) ──────────────────────────────
+model TagReading {
+  id          String   @id @default(uuid())
+  deviceId    String   @map("device_id")
+  epc         String   @db.VarChar(64)
+  rssi        Int?     @db.SmallInt
+  antennaId   Int?     @map("antenna_id") @db.SmallInt
+  readCount   Int      @default(1) @map("read_count")
+  firstSeenAt DateTime @default(now()) @map("first_seen_at") @db.Timestamptz()
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at") @db.Timestamptz()
+
+  device      Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([deviceId, epc])
+  @@index([deviceId])
+  @@index([lastSeenAt])
+  @@map("tag_readings")
+}
+
+// ─── GPS Location History ─────────────────────────────────────────────────────
+model GpsLocation {
+  id         String   @id @default(uuid())
+  deviceId   String   @map("device_id")
+  latitude   Float
+  longitude  Float
+  accuracy   Float?
+  altitude   Float?
+  recordedAt DateTime @default(now()) @map("recorded_at") @db.Timestamptz()
+
+  device     Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId])
+  @@index([recordedAt])
+  @@map("gps_locations")
+}
+
+// ─── Lock Events ──────────────────────────────────────────────────────────────
+model LockEvent {
+  id             String    @id @default(uuid())
+  deviceId       String    @map("device_id")
+  userId         String?   @map("user_id")
+  eventType      String    @map("event_type") @db.VarChar(30)
+  initiatedBy    String    @default("app") @map("initiated_by") @db.VarChar(10)
+  status         String    @default("PENDING") @db.VarChar(10)
+  idempotencyKey String?   @unique @map("idempotency_key") @db.VarChar(36)
+  latitude       Float?
+  longitude      Float?
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  device         Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId])
+  @@index([createdAt])
+  @@map("lock_events")
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  type      String    @db.VarChar(30)
+  title     String    @db.VarChar(100)
+  body      String    @db.VarChar(500)
+  data      Json?
+  isRead    Boolean   @default(false) @map("is_read")
+  readAt    DateTime? @map("read_at") @db.Timestamptz()
+  fcmSent   Boolean   @default(false) @map("fcm_sent")
+  fcmSentAt DateTime? @map("fcm_sent_at") @db.Timestamptz()
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// ─── Notification Preferences ─────────────────────────────────────────────────
+model NotificationPreference {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  notificationType String   @map("notification_type") @db.VarChar(30)
+  isEnabled        Boolean  @default(true) @map("is_enabled")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notificationType])
+  @@index([userId])
+  @@map("notification_preferences")
+}
+
+// ─── Activity Logs ────────────────────────────────────────────────────────────
+model ActivityLog {
+  id          String    @id @default(uuid())
+  userId      String?   @map("user_id")
+  deviceId    String?   @map("device_id")
+  eventType   String    @map("event_type") @db.VarChar(50)
+  description String    @db.Text
+  metadata    Json?
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([deviceId])
+  @@index([eventType])
+  @@index([createdAt(sort: Desc)])
+  @@map("activity_logs")
+}
+
+// ─── Geofence Configuration ───────────────────────────────────────────────────
+model GeofenceConfig {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  deviceId     String   @unique @map("device_id")
+  isEnabled    Boolean  @default(false) @map("is_enabled")
+  centerLat    Float    @map("center_lat")
+  centerLng    Float    @map("center_lng")
+  radiusMeters Int      @default(100) @map("radius_meters")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device       Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId])
+  @@map("geofence_configs")
+}

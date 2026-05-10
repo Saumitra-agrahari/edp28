@@ -1,0 +1,394 @@
+﻿Prisma schema loaded from prisma\schema.prisma
+node.exe : 
+At C:\Program 
+Files\nodejs\npx.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (:  
+  String) [], RemoteExc   
+ eption
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+Error: Prisma schema 
+validation - (validate 
+wasm)
+Error code: P1012
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`device` on Model `User` 
+and `owner` on Model 
+`Device` both provide the 
+`references` argument in 
+the @relation attribute. 
+You have to provide it 
+only on one of the two 
+fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:30[0m
+[1;94m   | [0m
+[1;94m29 | [0m
+[1;94m30 | [0m  
+[1;91mdevice             
+  Device?              
+@relation("DeviceOwner", 
+fields: [deviceId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m31 | [0m  
+sessions             
+UserSession[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`device` on Model `User` 
+and `owner` on Model 
+`Device` both provide the 
+`references` argument in 
+the @relation attribute. 
+You have to provide it 
+only on one of the two 
+fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:95[0m
+[1;94m   | [0m
+[1;94m94 | [0m
+[1;94m95 | [0m  
+[1;91mowner            
+User?          
+@relation("DeviceOwner", 
+fields: [ownerUserId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m96 | [0m  
+rfidTags         RfidTag[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`device` on Model `User` 
+and `owner` on Model 
+`Device` both provide the 
+`fields` argument in the 
+@relation attribute. You 
+have to provide it only 
+on one of the two 
+fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:30[0m
+[1;94m   | [0m
+[1;94m29 | [0m
+[1;94m30 | [0m  
+[1;91mdevice             
+  Device?              
+@relation("DeviceOwner", 
+fields: [deviceId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m31 | [0m  
+sessions             
+UserSession[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`device` on Model `User` 
+and `owner` on Model 
+`Device` both provide the 
+`fields` argument in the 
+@relation attribute. You 
+have to provide it only 
+on one of the two 
+fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:95[0m
+[1;94m   | [0m
+[1;94m94 | [0m
+[1;94m95 | [0m  
+[1;91mowner            
+User?          
+@relation("DeviceOwner", 
+fields: [ownerUserId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m96 | [0m  
+rfidTags         RfidTag[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`owner` on Model `Device` 
+and `device` on Model 
+`User` both provide the 
+`onDelete` or `onUpdate` 
+argument in the @relation 
+attribute. You have to 
+provide it only on one of 
+the two fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:95[0m
+[1;94m   | [0m
+[1;94m94 | [0m
+[1;94m95 | [0m  
+[1;91mowner            
+User?          
+@relation("DeviceOwner", 
+fields: [ownerUserId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m96 | [0m  
+rfidTags         RfidTag[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`device` on Model `User` 
+and `owner` on Model 
+`Device` both provide the 
+`onDelete` or `onUpdate` 
+argument in the @relation 
+attribute. You have to 
+provide it only on one of 
+the two fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:30[0m
+[1;94m   | [0m
+[1;94m29 | [0m
+[1;94m30 | [0m  
+[1;91mdevice             
+  Device?              
+@relation("DeviceOwner", 
+fields: [deviceId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m31 | [0m  
+sessions             
+UserSession[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": A 
+one-to-one relation must 
+use unique fields on the 
+defining side. Either add 
+an `@unique` attribute to 
+the field `deviceId`, or 
+change the relation to 
+one-to-many.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:30[0m
+[1;94m   | [0m
+[1;94m29 | [0m
+[1;94m30 | [0m  
+[1;91mdevice             
+  Device?              
+@relation("DeviceOwner", 
+fields: [deviceId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m31 | [0m  
+sessions             
+UserSession[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`owner` on Model `Device` 
+and `device` on Model 
+`User` both provide the 
+`references` argument in 
+the @relation attribute. 
+You have to provide it 
+only on one of the two 
+fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:95[0m
+[1;94m   | [0m
+[1;94m94 | [0m
+[1;94m95 | [0m  
+[1;91mowner            
+User?          
+@relation("DeviceOwner", 
+fields: [ownerUserId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m96 | [0m  
+rfidTags         RfidTag[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`owner` on Model `Device` 
+and `device` on Model 
+`User` both provide the 
+`references` argument in 
+the @relation attribute. 
+You have to provide it 
+only on one of the two 
+fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:30[0m
+[1;94m   | [0m
+[1;94m29 | [0m
+[1;94m30 | [0m  
+[1;91mdevice             
+  Device?              
+@relation("DeviceOwner", 
+fields: [deviceId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m31 | [0m  
+sessions             
+UserSession[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`owner` on Model `Device` 
+and `device` on Model 
+`User` both provide the 
+`fields` argument in the 
+@relation attribute. You 
+have to provide it only 
+on one of the two 
+fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:95[0m
+[1;94m   | [0m
+[1;94m94 | [0m
+[1;94m95 | [0m  
+[1;91mowner            
+User?          
+@relation("DeviceOwner", 
+fields: [ownerUserId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m96 | [0m  
+rfidTags         RfidTag[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`owner` on Model `Device` 
+and `device` on Model 
+`User` both provide the 
+`fields` argument in the 
+@relation attribute. You 
+have to provide it only 
+on one of the two 
+fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:30[0m
+[1;94m   | [0m
+[1;94m29 | [0m
+[1;94m30 | [0m  
+[1;91mdevice             
+  Device?              
+@relation("DeviceOwner", 
+fields: [deviceId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m31 | [0m  
+sessions             
+UserSession[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`device` on Model `User` 
+and `owner` on Model 
+`Device` both provide the 
+`onDelete` or `onUpdate` 
+argument in the @relation 
+attribute. You have to 
+provide it only on one of 
+the two fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:30[0m
+[1;94m   | [0m
+[1;94m29 | [0m
+[1;94m30 | [0m  
+[1;91mdevice             
+  Device?              
+@relation("DeviceOwner", 
+fields: [deviceId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m31 | [0m  
+sessions             
+UserSession[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": 
+The relation fields 
+`owner` on Model `Device` 
+and `device` on Model 
+`User` both provide the 
+`onDelete` or `onUpdate` 
+argument in the @relation 
+attribute. You have to 
+provide it only on one of 
+the two fields.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:95[0m
+[1;94m   | [0m
+[1;94m94 | [0m
+[1;94m95 | [0m  
+[1;91mowner            
+User?          
+@relation("DeviceOwner", 
+fields: [ownerUserId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m96 | [0m  
+rfidTags         RfidTag[]
+[1;94m   | [0m
+[1;91merror[0m: 
+[1mError parsing 
+attribute "@relation": A 
+one-to-one relation must 
+use unique fields on the 
+defining side. Either add 
+an `@unique` attribute to 
+the field `ownerUserId`, 
+or change the relation to 
+one-to-many.[0m
+  [1;94m-->[0m  [4mpris
+ma\schema.prisma:95[0m
+[1;94m   | [0m
+[1;94m94 | [0m
+[1;94m95 | [0m  
+[1;91mowner            
+User?          
+@relation("DeviceOwner", 
+fields: [ownerUserId], 
+references: [id], 
+onDelete: SetNull)[0m
+[1;94m96 | [0m  
+rfidTags         RfidTag[]
+[1;94m   | [0m
+
+Validation Error Count: 14
+[Context: validate]
+
+Prisma CLI Version : 
+5.22.0

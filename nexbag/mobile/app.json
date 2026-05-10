@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Smart Bag-Pack",
+    "slug": "nexbag",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nexbag.smartbagpack"
+    },
+    "android": {
+      "package": "com.nexbag.smartbagpack",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.INTERNET"
+      ]
+    },
+    "scheme": "smartbag",
+    "plugins": [
+      "expo-font",
+      "expo-router",
+      "expo-web-browser"
+    ]
+  }
+}
